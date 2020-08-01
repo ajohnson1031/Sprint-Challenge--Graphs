@@ -26,15 +26,40 @@ world.print_rooms()
 player = Player(world.starting_room)
 
 # Fill this out with directions to walk
-# traversal_path = ['n', 'n']
+# traversal_path = ['n', 'n']    
+class Stack():
+    def __init__(self):
+        self.stack = []
+    def push(self, value):
+        self.stack.append(value)
+    def pop(self):
+        if self.size() > 0:
+            return self.stack.pop()
+        else:
+            return None
+    def size(self):
+        return len(self.stack)
+    
 traversal_path = []
-
-
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
 player.current_room = world.starting_room
 visited_rooms.add(player.current_room)
+
+moves_made = Stack()
+
+while len(visited_rooms) < len(world.rooms):
+
+    # add current room to visited set()
+    visited_rooms.add(player.current_room)
+    
+    random_direction = player.current_room.get_exits()[random.randint(0, len(player.current_room.get_exits()) - 1)]
+    
+    if player.travel(random_direction).current_room:
+        moves_made.push(random_direction)
+        traversal_path.append(random_direction)
+   
 
 for move in traversal_path:
     player.travel(move)
@@ -48,15 +73,15 @@ else:
 
 
 
-#######
-# UNCOMMENT TO WALK AROUND
-#######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# #######
+# # UNCOMMENT TO WALK AROUND
+# #######
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
