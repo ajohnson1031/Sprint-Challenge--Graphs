@@ -26,19 +26,66 @@ world.print_rooms()
 player = Player(world.starting_room)
 
 # Fill this out with directions to walk
-# traversal_path = ['n', 'n']
+# traversal_path = ['n', 'n']    
+class Stack():
+    def __init__(self):
+        self.stack = []
+    def push(self, value):
+        self.stack.append(value)
+    def pop(self):
+        if self.size() > 0:
+            return self.stack.pop()
+        else:
+            return None
+    def size(self):
+        return len(self.stack)
+    
 traversal_path = []
 
-
+def reverse_direction(direction):
+    if(direction == 'n'):
+        return_direction = 's'
+    
+    if(direction == 's'):
+        return_direction = 'n'
+        
+    if(direction == 'w'):
+        return_direction = 'e'
+        
+    if(direction == 'e'):
+        return_direction = 'w'
+        
+    return return_direction
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
 player.current_room = world.starting_room
 visited_rooms.add(player.current_room)
 
-for move in traversal_path:
-    player.travel(move)
+moves_made = Stack()
+
+while len(visited_rooms) < len(world.rooms):
+    available_exits = player.current_room.get_exits()
+    available_directions = [exit for exit in available_exits if player.current_room.get_room_in_direction(exit) not in visited_rooms]
+    
+    ## add current room to visited set()
     visited_rooms.add(player.current_room)
+     
+    if len(available_directions):
+        ## pick a random direction and push it to the stack[]
+        random_direction = random.randint(0, len(available_directions) - 1)
+        moves_made.push(available_directions[random_direction])
+        # move the player in chosen direction and append move to traversal_path[]
+        player.travel(available_directions[random_direction])
+        traversal_path.append(available_directions[random_direction])   
+    else:
+        # if there are no available directions, get the latest move made
+        latest_move = moves_made.pop()
+        # reverse the last move and append to traversal_path[]
+        player.travel(reverse_direction(latest_move))
+        traversal_path.append(reverse_direction(latest_move))
+
+[player.travel(move) and visited_rooms.add(player.current_room) for move in traversal_path]
 
 if len(visited_rooms) == len(room_graph):
     print(f"TESTS PASSED: {len(traversal_path)} moves, {len(visited_rooms)} rooms visited")
@@ -48,15 +95,15 @@ else:
 
 
 
-#######
-# UNCOMMENT TO WALK AROUND
-#######
-player.current_room.print_room_description(player)
-while True:
-    cmds = input("-> ").lower().split(" ")
-    if cmds[0] in ["n", "s", "e", "w"]:
-        player.travel(cmds[0], True)
-    elif cmds[0] == "q":
-        break
-    else:
-        print("I did not understand that command.")
+# #######
+# # UNCOMMENT TO WALK AROUND
+# #######
+# player.current_room.print_room_description(player)
+# while True:
+#     cmds = input("-> ").lower().split(" ")
+#     if cmds[0] in ["n", "s", "e", "w"]:
+#         player.travel(cmds[0], True)
+#     elif cmds[0] == "q":
+#         break
+#     else:
+#         print("I did not understand that command.")
